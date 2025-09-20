@@ -1,8 +1,9 @@
+import java.sql.Connection;
 import java.util.Scanner;
 
 public class Main {
 
-    public void Menu() {
+    static void Menu() {
         System.out.println(
                 "Choose an option:\n" +
                 "1. Add Book\n" +
@@ -26,7 +27,7 @@ public class Main {
                 manager.AddBook();
                 break;
             case 2:
-                AddUser();
+                //AddUser();
                 break;
             case 3:
                 manager.BorrowBook();
@@ -46,6 +47,11 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        try (Connection conn = Database.getConnection()) {
+            System.out.println("✅ Connected to MySQL!");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         System.out.println("Welcome to Library System!");
         Menu();
 

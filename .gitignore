@@ -7,3 +7,6 @@ out/
 
 # Logs
 *.log
+
+# OS junk (Mac)
+.DS_Store
