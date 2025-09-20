@@ -16,7 +16,7 @@ public class Main {
         // Takes input
         Scanner reader = new Scanner(System.in);
         int choice = reader.nextInt();
-        reader.close();
+        //reader.close();
 
         // Methods for BookManager
         BookManager manager = new BookManager();
@@ -24,7 +24,11 @@ public class Main {
         // Options
         switch (choice) {
             case 1:
-                manager.AddBook();
+                System.out.print("Enter Book Title: ");
+                String title = reader.next();
+                System.out.print("Enter Book Author: ");
+                String author = reader.next();
+                manager.AddBook(title, author);
                 break;
             case 2:
                 //AddUser();
