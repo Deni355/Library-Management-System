@@ -35,6 +35,9 @@ public class Main {
                 break;
             case 3:
                 manager.BorrowBook();
+                System.out.println("Please choose a book by writing its number:");
+                int id = reader.nextInt();
+                manager.BorrowBookID(id);
                 break;
             case 4:
                 manager.ReturnBook();
@@ -52,7 +55,7 @@ public class Main {
 
     public static void main(String[] args) {
         try (Connection conn = Database.getConnection()) {
-            System.out.println("✅ Connected to MySQL!");
+            System.out.println("Connected to MySQL!");
         } catch (Exception e) {
             e.printStackTrace();
         }

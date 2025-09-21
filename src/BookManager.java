@@ -1,11 +1,10 @@
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 public class BookManager {
     public void AddBook(String title, String author) {
-        System.out.println("Add Book");
-
         String query = "INSERT INTO books (title, author, available) VALUES (?, ?, TRUE)";
 
         // Check connection with database and execute query
@@ -24,7 +23,47 @@ public class BookManager {
         }
     }
 
-    public void BorrowBook() {System.out.println("Borrow Book");}
+    public void BorrowBook() {
+        System.out.println("Available Books:");
+
+        String query = "SELECT id, title, author FROM books WHERE available = TRUE";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) { // ResultSet is used for executeQuery
+
+            // To print every book that is available
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String title = rs.getString("title");
+                String author = rs.getString("author");
+                System.out.println(id + ". " + title + " by " + author);
+            }
+
+        }  catch (SQLException e) {
+            System.out.println("Error with listing books: " + e.getMessage());
+        }
+    }
+
+    public void BorrowBookID(int id) {
+        String query = "UPDATE books SET available = FALSE WHERE id = ?";
+
+        try (Connection conn = Database.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, id); // Switch the first ? with id
+
+            int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
+            if (rows > 0) {
+                System.out.println("Book borrowed!");
+            } else  {
+                System.out.println("No book found or already borrowed!");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error borrowing book: " + e.getMessage());
+        }
+    }
+
     public void ReturnBook() {System.out.println("Return Book");}
     public void SearchBook() {System.out.println("Search Book");}
 }
