@@ -4,8 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class BookManager {
-    public void AddBook(String title, String author) {
-        String query = "INSERT INTO books (title, author, available) VALUES (?, ?, TRUE)";
+    public void addBook(String title, String author, int year) {
+        String query = "INSERT INTO books (title, author, year, available) VALUES (?, ?, ?, TRUE)";
 
         // Check connection with database and execute query
         try (Connection conn = Database.getConnection();
@@ -13,20 +13,21 @@ public class BookManager {
 
             stmt.setString(1, title); // Switch the first ? with title
             stmt.setString(2, author); // Switch the second ? with author
+            stmt.setInt(3, year); // third ? with year
 
             int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
             if (rows > 0) {
-                System.out.println("Book added: " + title + " by " + author);
+                System.out.println("Book added: " + title + " by " + author + " (" + year + ")");
             }
         } catch (SQLException e) {
             System.out.println("Error adding book: " + e.getMessage());
         }
     }
 
-    public void BorrowBook() {
+    public void borrowBook() {
         System.out.println("Available Books:");
 
-        String query = "SELECT id, title, author FROM books WHERE available = TRUE";
+        String query = "SELECT * FROM books WHERE available = TRUE";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -37,7 +38,8 @@ public class BookManager {
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
                 String author = rs.getString("author");
-                System.out.println(id + ". " + title + " by " + author);
+                int year = rs.getInt("year");
+                System.out.println(id + ". " + title + " by " + author + " (" + year + ")");
             }
 
         }  catch (SQLException e) {
@@ -45,8 +47,8 @@ public class BookManager {
         }
     }
 
-    public void BorrowBookID(int id) {
-        String query = "UPDATE books SET available = FALSE WHERE id = ?";
+    public void borrowBookID(int id) {
+        String query = "UPDATE books SET available = FALSE WHERE id = ? AND available = TRUE";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
@@ -64,6 +66,6 @@ public class BookManager {
         }
     }
 
-    public void ReturnBook() {System.out.println("Return Book");}
-    public void SearchBook() {System.out.println("Search Book");}
+    public void returnBook() {System.out.println("Return Book");}
+    public void searchBook() {System.out.println("Search Book");}
 }

@@ -28,22 +28,24 @@ public class Main {
                 String title = reader.next();
                 System.out.print("Enter Book Author: ");
                 String author = reader.next();
-                manager.AddBook(title, author);
+                System.out.print("Enter Book Year: ");
+                int year = reader.nextInt();
+                manager.addBook(title, author, year);
                 break;
             case 2:
                 //AddUser();
                 break;
             case 3:
-                manager.BorrowBook();
+                manager.borrowBook();
                 System.out.println("Please choose a book by writing its number:");
                 int id = reader.nextInt();
-                manager.BorrowBookID(id);
+                manager.borrowBookID(id);
                 break;
             case 4:
-                manager.ReturnBook();
+                manager.returnBook();
                 break;
             case 5:
-                manager.SearchBook();
+                manager.searchBook();
                 break;
             case 6:
                 System.exit(0);

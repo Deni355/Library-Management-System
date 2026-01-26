@@ -8,5 +8,11 @@ out/
 # Logs
 *.log
 
+# Environment variables
+.env
+
+# External libraries
+lib/*.jar
+
 # OS junk (Mac)
 .DS_Store
