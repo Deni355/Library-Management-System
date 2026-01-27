@@ -21,6 +21,9 @@ public class Main {
         // Methods for BookManager
         BookManager manager = new BookManager();
 
+        // Variables
+        int id;
+
         // Options
         switch (choice) {
             case 1:
@@ -33,16 +36,21 @@ public class Main {
                 manager.addBook(title, author, year);
                 break;
             case 2:
-                //AddUser();
+                System.out.print("Enter user's First name: ");
+                String name = reader.next();
+                manager.addUser(name);
                 break;
             case 3:
                 manager.borrowBook();
                 System.out.println("Please choose a book by writing its number:");
-                int id = reader.nextInt();
+                id = reader.nextInt();
                 manager.borrowBookID(id);
                 break;
             case 4:
                 manager.returnBook();
+                System.out.println("Please choose a book by writing its number:");
+                id = reader.nextInt();
+                manager.returnBookID(id);
                 break;
             case 5:
                 manager.searchBook();
