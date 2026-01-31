@@ -26,7 +26,7 @@ public class Main {
 
         // Options
         switch (choice) {
-            case 1:
+            case 1: // Add book
                 System.out.print("Enter Book Title: ");
                 String title = reader.next();
                 System.out.print("Enter Book Author: ");
@@ -35,19 +35,19 @@ public class Main {
                 int year = reader.nextInt();
                 manager.addBook(title, author, year);
                 break;
-            case 2:
+            case 2: // Add User
                 System.out.print("Enter user's First name: ");
                 String name = reader.next();
                 manager.addUser(name);
                 break;
-            case 3:
-                manager.borrowBook();
+            case 3: // Borrow
+                manager.listAvailableBooks();
                 System.out.println("Please choose a book by writing its number:");
                 id = reader.nextInt();
                 manager.borrowBookID(id);
                 break;
-            case 4:
-                manager.returnBook();
+            case 4: // Return book
+                manager.listBorrowedBooks();
                 System.out.println("Please choose a book by writing its number:");
                 id = reader.nextInt();
                 manager.returnBookID(id);

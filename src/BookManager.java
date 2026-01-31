@@ -25,10 +25,15 @@ public class BookManager {
     }
 
     // TODO add relation between user and book borrowing and returning
-    public void borrowBook() {
-        System.out.println("Available Books:");
-
-        String query = "SELECT * FROM books WHERE available = TRUE";
+    public void listBook(boolean available) {
+        String query = "";
+        if (available) {
+            System.out.println("Available Books:");
+            query = "SELECT * FROM books WHERE available = TRUE";
+        } else {
+            System.out.println("Borrowed books:");
+            query = "SELECT * FROM books WHERE available = FALSE";
+        }
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query);
@@ -48,6 +53,10 @@ public class BookManager {
         }
     }
 
+    // Wrapper methods for better look and readability
+    public void listAvailableBooks() { listBook(true);}
+    public void listBorrowedBooks() { listBook(false);}
+
     public void borrowBookID(int id) {
         String query = "UPDATE books SET available = FALSE WHERE id = ? AND available = TRUE";
 
@@ -64,29 +73,6 @@ public class BookManager {
             }
         } catch (SQLException e) {
             System.out.println("Error borrowing book: " + e.getMessage());
-        }
-    }
-
-    public void returnBook() {
-        System.out.println("Borrowed books:");
-
-        String query = "SELECT * FROM books WHERE available = FALSE"; // Add also by username later
-
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) { // ResultSet is used for executeQuery
-
-            // To print every book that is borrowed
-            while (rs.next()) {
-                int id = rs.getInt("id");
-                String title = rs.getString("title");
-                String author = rs.getString("author");
-                int year = rs.getInt("year");
-                System.out.println(id + ". " + title + " by " + author + " (" + year + ")");
-            }
-
-        }  catch (SQLException e) {
-            System.out.println("Error with listing books: " + e.getMessage());
         }
     }
 
