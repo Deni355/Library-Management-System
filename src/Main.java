@@ -3,7 +3,8 @@ import java.util.Scanner;
 
 public class Main {
     static final Scanner reader = new Scanner(System.in); // The reader for the input
-    static final BookManager manager = new BookManager(); // BookManager
+    static final BookManager bookManager = new BookManager(); // BookManager
+    static final UserManager userManager = new UserManager(); // UserManager
 
     static void welcome() {
         while (true) {
@@ -33,7 +34,34 @@ public class Main {
 
     static void login() {
         System.out.println("Please write your First name: ");
+        String firstName = reader.nextLine();
+        System.out.println("Please write your Last name: ");
+        String lastName = reader.nextLine();
 
+        // Get the userId if it exists
+        Integer userId = userManager.findUserId(firstName, lastName);
+
+        if (userId != null) {
+            System.out.println("Hello " + firstName + lastName + " !");
+        } else {
+            System.out.println(
+                    "No registered user found! Do you want to register?\n" +
+                    "1. Yes\n" +
+                    "2. No");
+
+            int choice = reader.nextInt();
+            reader.nextLine();
+
+            switch (choice) {
+                case 1:
+                    register();
+                case 2:
+                    System.out.println("Goodbye!");
+                    System.exit(0);
+                default:
+                    System.out.println("Wrong choice, try again");
+            }
+        }
     }
 
     static void register() {}
@@ -63,29 +91,29 @@ public class Main {
                     String author = reader.nextLine();
                     System.out.print("Enter Book Year: ");
                     int year = reader.nextInt();
-                    manager.addBook(title, author, year);
+                    bookManager.addBook(title, author, year);
                     break;
                 case 2: // Add User
                     System.out.print("Enter user's First name: ");
                     String name = reader.nextLine();
-                    manager.addUser(name);
+                    userManager.addUser(name);
                     break;
                 case 3: // Borrow
-                    manager.listAvailableBooks();
+                    bookManager.listAvailableBooks();
                     System.out.println("Please choose a book by writing its number:");
                     int borrowId = reader.nextInt();
                     reader.nextLine();
-                    manager.borrowBookID(borrowId);
+                    bookManager.borrowBookID(borrowId);
                     break;
                 case 4: // Return book
-                    manager.listBorrowedBooks();
+                    bookManager.listBorrowedBooks();
                     System.out.println("Please choose a book by writing its number:");
                     int returnId = reader.nextInt();
                     reader.nextLine();
-                    manager.returnBookID(returnId);
+                    bookManager.returnBookID(returnId);
                     break;
                 case 5:
-                    manager.searchBook(); //TODO pass reader if needed for taking input
+                    bookManager.searchBook(); //TODO pass reader if needed for taking input
                     break;
                 case 6:
                     reader.close();

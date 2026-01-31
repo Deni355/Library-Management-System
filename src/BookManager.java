@@ -96,22 +96,5 @@ public class BookManager {
 
     }
 
-    public void addUser(String name) {
-        String query = "INSERT INTO users (name) VALUES (?)";
-
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-
-            stmt.setString(1, name); // Switch the first ? with name
-
-            int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
-            if (rows > 0) {
-                System.out.println("User " + name + " added!");
-            }
-        } catch (SQLException e) {
-            System.out.println("Error adding user: " + e.getMessage());
-        }
-
-    }
     public void searchBook() {System.out.println("Search Book");}
 }
