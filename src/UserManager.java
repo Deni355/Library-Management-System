@@ -4,22 +4,28 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 public class UserManager {
-    public void addUser(String name) {
-        String query = "INSERT INTO users (name) VALUES (?)";
+    public Integer addUser(String firstName, String lastName) {
+        String query = "INSERT INTO users (first_name, last_name) VALUES (?, ?)";
 
         try (Connection conn = Database.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
 
-            stmt.setString(1, name); // Switch the first ? with name
+            stmt.setString(1, firstName); // Switch the first ? with name
+            stmt.setString(2, lastName); // Switch the first ? with name
 
-            int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
-            if (rows > 0) {
-                System.out.println("User " + name + " added!");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int userId = rs.getInt("id");
+                    System.out.println(firstName + " " + lastName + " registered successfully!");
+                    return userId;
+                }
             }
+
         } catch (SQLException e) {
-            System.out.println("Error adding user: " + e.getMessage());
+            System.out.println("Error registering user: " + e.getMessage());
         }
 
+        return null;
     }
 
     //TODO update database for users

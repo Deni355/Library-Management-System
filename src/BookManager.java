@@ -24,7 +24,6 @@ public class BookManager {
         }
     }
 
-    // TODO add relation between user and book borrowing and returning
     public void listBook(boolean available) {
         String query = "";
         if (available) {
@@ -57,43 +56,78 @@ public class BookManager {
     public void listAvailableBooks() { listBook(true);}
     public void listBorrowedBooks() { listBook(false);}
 
-    public void borrowBookID(int id) {
-        String query = "UPDATE books SET available = FALSE WHERE id = ? AND available = TRUE";
+    public void borrowBook(int userId, int bookId) {
+        String updateBook = "UPDATE books SET available = FALSE WHERE id = ? AND available = TRUE";
+        String insertBorrowing = "INSERT INTO borrowings (user_id, book_id) VALUES (?, ?)";
 
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        try (Connection conn = Database.getConnection()) {
 
-            stmt.setInt(1, id); // Switch the first ? with id
+            // start transaction meaning if one of the queries fails stop both
+            conn.setAutoCommit(false);
 
-            int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
-            if (rows > 0) {
-                System.out.println("Book borrowed!");
-            } else  {
-                System.out.println("No book found or already borrowed!");
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateBook)) {
+                updateStmt.setInt(1, bookId);
+                int rows = updateStmt.executeUpdate();
+
+                if (rows == 0) {
+                    System.out.println("Book not available.");
+                    conn.rollback();
+                    return;
+                }
             }
+
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertBorrowing)) {
+                insertStmt.setInt(1, userId);
+                insertStmt.setInt(2, bookId);
+                insertStmt.executeUpdate();
+            }
+
+            // commit transaction
+            conn.commit();
+            System.out.println("Book borrowed successfully!");
+
         } catch (SQLException e) {
             System.out.println("Error borrowing book: " + e.getMessage());
         }
     }
 
-    public void returnBookID(int id) {
-        String query = "UPDATE books SET available = TRUE WHERE id = ? AND available = FALSE";
+    public void returnBookID(int bookId) {
+        String updateBook = "UPDATE books SET available = TRUE WHERE id = ? AND available = FALSE";
 
-        try (Connection conn = Database.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
+        String updateBorrowing = "UPDATE borrowings " +
+                        "SET returned_at = NOW() " +
+                        "WHERE book_id = ? AND returned_at IS NULL";
 
-            stmt.setInt(1, id); // Switch the first ? with id
+        try (Connection conn = Database.getConnection()) {
 
-            int rows = stmt.executeUpdate(); // How many rows were affected after executeUpdate
-            if (rows > 0) {
-                System.out.println("Book returned!");
-            } else  {
-                System.out.println("No book found or already returned!");
+            // start transaction
+            conn.setAutoCommit(false);
+
+            int rowsUpdated;
+
+            try (PreparedStatement stmt = conn.prepareStatement(updateBook)) {
+                stmt.setInt(1, bookId);
+                rowsUpdated = stmt.executeUpdate();
+
+                if (rowsUpdated == 0) {
+                    System.out.println("No borrowed book found with that ID.");
+                    conn.rollback();
+                    return;
+                }
             }
+
+            try (PreparedStatement stmt = conn.prepareStatement(updateBorrowing)) {
+                stmt.setInt(1, bookId);
+                stmt.executeUpdate();
+            }
+
+            // commit both updates together
+            conn.commit();
+            System.out.println("Book returned!");
+
         } catch (SQLException e) {
             System.out.println("Error returning book: " + e.getMessage());
         }
-
     }
 
     public void searchBook() {System.out.println("Search Book");}

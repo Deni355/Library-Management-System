@@ -6,6 +6,10 @@ public class Main {
     static final BookManager bookManager = new BookManager(); // BookManager
     static final UserManager userManager = new UserManager(); // UserManager
 
+    static Integer currentUserId = null;
+    static String currentFirstName = "";
+    static String currentLastName = "";
+
     static void welcome() {
         while (true) {
             System.out.println(
@@ -42,7 +46,12 @@ public class Main {
         Integer userId = userManager.findUserId(firstName, lastName);
 
         if (userId != null) {
-            System.out.println("Hello " + firstName + lastName + " !");
+            currentUserId = userId;
+            currentFirstName = firstName;
+            currentLastName = lastName;
+
+            System.out.println("Hello " + firstName + " " + lastName + "!");
+            Menu();
         } else {
             System.out.println(
                     "No registered user found! Do you want to register?\n" +
@@ -54,7 +63,10 @@ public class Main {
 
             switch (choice) {
                 case 1:
-                    register();
+                    currentUserId = userManager.addUser(firstName, lastName);
+                    currentFirstName = firstName;
+                    currentLastName = lastName;
+                    Menu();
                 case 2:
                     System.out.println("Goodbye!");
                     System.exit(0);
@@ -64,7 +76,17 @@ public class Main {
         }
     }
 
-    static void register() {}
+    static void register() {
+        System.out.println("Please write your First name: ");
+        String firstName = reader.nextLine();
+        System.out.println("Please write your Last name: ");
+        String lastName = reader.nextLine();
+
+        currentUserId = userManager.addUser(firstName, lastName);
+        currentFirstName = firstName;
+        currentLastName = lastName;
+        Menu();
+    }
 
     static void Menu() {
 
@@ -96,14 +118,14 @@ public class Main {
                 case 2: // Add User
                     System.out.print("Enter user's First name: ");
                     String name = reader.nextLine();
-                    userManager.addUser(name);
+                    // userManager.addUser(name, );
                     break;
                 case 3: // Borrow
                     bookManager.listAvailableBooks();
                     System.out.println("Please choose a book by writing its number:");
                     int borrowId = reader.nextInt();
                     reader.nextLine();
-                    bookManager.borrowBookID(borrowId);
+                    bookManager.borrowBook(currentUserId, borrowId);
                     break;
                 case 4: // Return book
                     bookManager.listBorrowedBooks();
@@ -126,7 +148,7 @@ public class Main {
 
     public static void main(String[] args) {
         try (Connection conn = Database.getConnection()) {
-            System.out.println("Connected to MySQL!");
+            System.out.println("Connected to PostgreSQL!");
         } catch (Exception e) {
             e.printStackTrace();
         }
